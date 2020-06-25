@@ -1,0 +1,49 @@
+version: '3'
+services:
+  mysql:
+    container_name: share_it_db 
+    build: ./docker/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: share_it_dev 
+      MYSQL_USER: docker 
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    ports:
+        - "3306:3306"
+    volumes:
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+        # 初期データ投入
+      - ./docker/mysql/initdb.d/:/docker-entrypoint-initdb.d
+        # 永続化
+      - ./docker/mysql/data:/var/lib/mysql
+  # APIサーバ用 
+  go_server:
+    container_name: go_server-2
+    links:
+      - mysql
+    build:
+      context: .
+      dockerfile: ./docker/golang/Dockerfile
+    environment:
+      TZ: "Asia/Tokyo"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/golang:/go/src/share_it_server
+  # APサーバ用
+  react_front:
+    container_name: react_front-2
+    build:
+      context: .
+      dockerfile: ./docker/react-front/Dockerfile
+    ports:
+      - "8088:8088"
+    tty: true
+    volumes:
+      - ./docker/react-front:/usr/src/app
+# トップレベルでvolumesを定義すると、各サービスからボリュームを参照できる
+volumes:
+  db-data:
+    driver: local
