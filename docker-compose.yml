@@ -20,7 +20,7 @@ services:
       - ./docker/mysql/data:/var/lib/mysql
   # APIサーバ用 
   go_server:
-    container_name: go_server-2
+    container_name: go_server
     links:
       - mysql
     build:
@@ -34,7 +34,7 @@ services:
       - ./docker/golang:/go/src/share_it_server
   # APサーバ用
   react_front:
-    container_name: react_front-2
+    container_name: react_front
     build:
       context: .
       dockerfile: ./docker/react-front/Dockerfile
@@ -43,6 +43,7 @@ services:
     tty: true
     volumes:
       - ./docker/react-front:/usr/src/app
+      - /usr/src/app/node_modules
 # トップレベルでvolumesを定義すると、各サービスからボリュームを参照できる
 volumes:
   db-data:
