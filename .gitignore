@@ -1,4 +1,4 @@
 docker/mysql/data
 
 docker/react-front/node_modules
-docker/golang/dist
+docker/golang/dist/
